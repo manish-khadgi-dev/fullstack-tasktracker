@@ -21,9 +21,10 @@ operation.
 
 Task router follow the following url path `{rootURL}/api/v1/task`. More details as follows
 
-| #                                                                    | PATH | METHOD | IS PRIVATE | DESCRIPTION                                                     |
-| -------------------------------------------------------------------- | ---- | ------ | ---------- | --------------------------------------------------------------- |
-| 1.                                                                   | `/`  | POST   | false      | This api allows client to send taskobject and store in database |
-| the object should be in th following structure {task: "" , type: ""} |
-| 2.                                                                   | `/`  | GET    | false      | This api allows client to send taskobject and store in database |
-| 3.                                                                   | `/`  | PATCH  | false      | This api allows client to send taskobject and store in database |
+| #   | PATH    | METHOD | IS PRIVATE | DESCRIPTION                                                                                                                                               |
+| --- | ------- | ------ | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.  | `/`     | POST   | false      | This api allows client to send taskobject and store in database the object should be in th following structure {task: "" , hr: 0, type: ""}               |
+| 2.  | `/`     | GET    | false      | This api allows client to send taskobject and store in database                                                                                           |
+| 3.  | `/`     | PATCH  | false      | This api allows client to send taskobject and store in database. Client must send data in following format structure `{_id: "asdf", type:"bad or entry"}` |
+| 4.  | `/:_id` | DELETE | false      | This api allows client to delete a task based on the given `_id` from database taskobject and store in database                                           |
+| 5.  | `/`     | PATCH  | false      | This api allows client to send multiple `_ids` of the task to delete multiple items from the database                                                     |
