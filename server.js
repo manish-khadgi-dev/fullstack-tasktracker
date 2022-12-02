@@ -2,6 +2,11 @@ import express from "express";
 const app = express();
 const PORT = 8000;
 
+//db connect
+import mongoConnect from "./src/config/dbConfig.js";
+
+mongoConnect();
+
 //middlewares
 app.use(express.json());
 
@@ -12,10 +17,10 @@ app.use("/ap1/v1/tasks", taskRouters);
 
 //handle all uncaught router request
 app.use("*", (res, req, next) => {
-  //   res.status(400).json({
-  //     status: "error",
-  //     message: "404 Page Not Found",
-  //   });
+  res.status(400).json({
+    status: "error",
+    message: "404 Page Not Found",
+  });
 
   const error = {
     status: 404,

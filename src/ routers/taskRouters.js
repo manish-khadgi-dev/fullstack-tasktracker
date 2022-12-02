@@ -1,29 +1,45 @@
 import express, { application } from "express";
+import {
+  deleteManyTask,
+  getTasks,
+  insertTask,
+  updateTask,
+} from "../models / task/TaskModel.js";
 const router = express.Router();
 
 // delete the fake database wehn integrate with database
-let fakeDb = [{ _id: 1, task: "watching TV", hr: 40, type: "entry" }];
+// let fakeDb = [{ _id: 1, task: "watching TV", hr: 40, type: "entry" }];
 
 //routers
 
-router.get("/", (req, res) => {
-  res.json({
-    status: "success",
-    message: "List of the tasks",
-    fakeDb,
-  });
-});
-
-router.post("/", (req, res, next) => {
+router.get("/", async (req, res) => {
   try {
-    const data = req.body;
-
-    //run the db query to add to db
-    fakeDb.push(data);
-
+    const tasks = await getTasks();
     res.json({
       status: "success",
-      message: "adding data to the db",
+      message: "List of the tasks",
+      tasks,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post("/", async (req, res, next) => {
+  try {
+    //run the db query to add to db
+    // fakeDb.push(data);
+
+    const result = await insertTask(req.body);
+    if (result?._id) {
+      return res.json({
+        status: "success",
+        message: "adding data to the db",
+      });
+    }
+    res.json({
+      status: "success",
+      message: "Error data to the db",
     });
   } catch (error) {
     error.code = 500;
@@ -31,20 +47,22 @@ router.post("/", (req, res, next) => {
   }
 });
 
-router.patch("/", (req, res, next) => {
-  const { _id, type } = req.body;
+router.patch("/", async (req, res, next) => {
   try {
-    // ****** update
+    const { _id, type } = req.body;
+    const task = await updateTask(_id, type);
+    console.log(task);
 
-    fakeDb = fakeDb.map((item) => {
-      if (item._id === _id) {
-        item.type = type;
-      }
-      return item;
-    });
+    if (task?._id) {
+      res.json({
+        status: "success",
+        message: "updating data to the db",
+      });
+    }
+
     res.json({
-      status: "success",
-      message: "updating data to the db",
+      status: "error",
+      message: "Unable to switch the task, try again later",
     });
   } catch (error) {
     error.status = 500;
@@ -56,17 +74,22 @@ router.patch("/", (req, res, next) => {
 // router.delete("/:_id", (req, res, next) => {
 
 //use multiple item to delete
-router.delete("/", (req, res, next) => {
+router.delete("/", async (req, res, next) => {
   const _idArg = req.body;
   console.log(_idArg);
 
-  //replace following code by calling db functions
-  // fakeDb = fakeDb.filter((item) => item._id != _id);
-  fakeDb = fakeDb.filter(({ _id }) => !_idArg.includes(_id));
+  const result = await deleteManyTask(_idArg);
   try {
+    if (result?.deletedCount) {
+      res.json({
+        status: "success",
+        message: "deleted successfully",
+      });
+    }
+
     res.json({
       status: "success",
-      message: "deleted successfully",
+      message: "Unable to deleted successfully",
     });
   } catch (error) {
     error.code = 500;
