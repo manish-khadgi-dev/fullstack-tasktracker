@@ -1,4 +1,8 @@
 import express from "express";
+
+import cors from "cors";
+import morgan from "morgan";
+
 const app = express();
 const PORT = 8000;
 
@@ -9,21 +13,18 @@ mongoConnect();
 
 //middlewares
 app.use(express.json());
+app.use(cors());
+app.use(morgan("dev"));
 
 //routers
 import taskRouters from "./src/ routers/taskRouters.js";
 
-app.use("/ap1/v1/tasks", taskRouters);
+app.use("/api/v1/tasks", taskRouters);
 
 //handle all uncaught router request
 app.use("*", (res, req, next) => {
-  res.status(400).json({
-    status: "error",
-    message: "404 Page Not Found",
-  });
-
   const error = {
-    status: 404,
+    code: 404,
     message: "404 Page Not Found",
   };
   next(error);
@@ -31,6 +32,7 @@ app.use("*", (res, req, next) => {
 
 // global error handler
 app.use((error, req, res, next) => {
+  console.log(error);
   const statusCode = error.code || 500;
   res.status(statusCode).json({
     status: "error",
